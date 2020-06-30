@@ -1,0 +1,42 @@
+{
+  "Comment": "Say hello to a person, specifying their name. If the person's name is Teapot then wait 5 seconds before returning.",
+  "StartAt": "SayHelloFunction",
+  "States": {
+    "SayHelloFunction": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-2:596256553012:function:say-hello-SayHelloFunction-1KNB19IHJB97R",
+      "Next": "If200SucceedIf400FailIfTeapotWait"
+    },
+    "If200SucceedIf400FailIfTeapotWait": {
+      "Type" : "Choice",
+      "Choices": [
+        {
+          "Variable": "$.statusCode",
+          "NumericEquals": 200,
+          "Next": "Succeed"
+        },
+        {
+          "Variable": "$.statusCode",
+          "NumericEquals": 418,
+          "Next": "WaitFiveSeconds"
+        },
+        {
+          "Variable": "$.statusCode",
+          "NumericEquals": 400,
+          "Next": "Fail"
+        }
+      ]
+    },
+    "WaitFiveSeconds": {
+      "Type": "Wait",
+      "Seconds": 5,
+      "Next": "Succeed"
+    },
+    "Succeed": {
+      "Type": "Succeed"
+    },
+    "Fail": {
+      "Type": "Fail",
+      "Cause": "Looks like you did not specify a name for the greeting! Try again, please."    }
+  }
+}
